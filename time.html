@@ -19,6 +19,25 @@
             <input type="text", id="a1", placeholder="enter your Name">
         </td>
     </tr>
+    <tr>
+        <td>
+            <td> <button onclick="login()">CLICK ME</button></td>
+        </td>
+    </tr>
     <marquee behavior="scroll", direction="right", bgcolor="yellow", >I wish you a succesful year</marquee>
+    <script>
+        function login(){
+    let x= document.getElementById("a1").value;   
+
+if(x=="Yogananda"||x=="Diwakar"||x=="Vasanth"||x=="yogananda"||x=="diwakar"||x=="vasanth"){
+    document.getElementById("in").innerHTML="PANI MODDA LEDA RAA NEEKU";
+}
+else{
+    document.getElementById("in").innerHTML="Enter Valid Name";
+}
+        }
+    </script>
+    <h2 id="in"></h2>
+
 </body>
 </html>
