@@ -1,0 +1,261 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Data;
+namespace PL
+{
+ public partial class WebForm1 : System.Web.UI.Page
+ {
+ BLL.Class1 b = new BLL.Class1();
+ public void GetData()
+ {
+ DataSet ds = b.GetData();
+ GridView1.DataSource = ds;
+ GridView1.DataBind();
+ }
+ protected void Page_Load(object sender, EventArgs e)
+ {
+ if (IsPostBack==false)
+ GetData();
+ }
+ BO.Class1 e1 = new BO.Class1();
+ protected void Button1_Click(object sender, EventArgs e)
+ {
+ BO.Class1 boe = new BO.Class1();
+ boe.ename = TextBox1.Text;
+ boe.desg = DropDownList1.SelectedItem.Text;
+ boe.salary = Convert.ToDouble(TextBox2.Text);
+ boe.email = TextBox3.Text;
+ boe.mobile = Convert.ToInt64(TextBox4.Text);
+ boe.qualification = DropDownList2.SelectedItem.Text;
+ boe.mid = Convert.ToInt32(TextBox5.Text);
+ int x = b.Ma(boe);
+ if (x != 0)
+ {
+ int a=0;
+ if (Button1.Text == "Insert")
+ {
+ boe.op = "Insert";
+boe.session = "p_insert";
+a = b.Insert(boe);
+ }
+ else if(Button1.Text=="Update")
+ {
+ boe.eid = Convert.ToInt32(Session["eid"].ToString());
+ boe.op = "Update";
+boe.session = "p_update";
+a = b.Insert(boe);
+ }
+ if (a != 0)
+ GetData();
+ TextBox1.Text = "";
+ DropDownList1.SelectedIndex = 0;
+ TextBox2.Text = "";
+ TextBox3.Text = "";
+ TextBox4.Text = "";
+ TextBox5.Text = "";
+ DropDownList2.SelectedIndex = 0;
+ Button1.Text = "Insert";
+ GetData();
+ }
+ else
+ {
+ Label9.Visible = true;
+ Label9.Text = "Enter a valid manager id";
+ }
+ }
+ protected void GridView1_RowCommand(object sender, GridViewCommandEventArgs e)
+ {
+ if (e.CommandName == "e")
+ {
+ int index = Convert.ToInt32(e.CommandArgument);
+ GridViewRow row = GridView1.Rows[index];
+ Label l1 = (Label)row.FindControl("Label1");
+ Label l2 = (Label)row.FindControl("Label2");
+ Label l3 = (Label)row.FindControl("Label3");
+ Label l4 = (Label)row.FindControl("Label4");
+ Label l5 = (Label)row.FindControl("Label5");
+ Label l6 = (Label)row.FindControl("Label6");
+ Label l7 = (Label)row.FindControl("Label7");
+ Label l8 = (Label)row.FindControl("Label8");
+ Session["eid"] = l1.Text;
+ TextBox1.Text = l2.Text;
+ DropDownList1.Text = l3.Text;
+ TextBox2.Text = l4.Text;
+ TextBox3.Text = l5.Text;
+ TextBox4.Text = l6.Text;
+ DropDownList2.Text = l7.Text;
+ e1.ename = l8.Text;
+ int a = b.Manager(e1);
+ if (a != 0)
+ TextBox5.Text = a.ToString();
+ else
+ TextBox5.Text = "";
+ Button1.Text = "Update";
+ }
+ else if (e.CommandName == "d")
+ {
+ int index = Convert.ToInt32(e.CommandArgument);
+ GridViewRow row = GridView1.Rows[index];
+ Label l1 = (Label)row.FindControl("Label1");
+ e1.eid = Convert.ToInt32(l1.Text);
+ e1.session = "p_delete";
+ e1.op = "Delete";
+ int a = b.Insert(e1);
+ if (a != 0)
+ {
+ GetData();
+ }
+ }
+ }
+ protected void Button3_Click(object sender, EventArgs e)
+ {
+ TextBox1.Text = "";
+ DropDownList1.SelectedIndex = 0;
+ TextBox2.Text = "";
+ TextBox3.Text = "";
+ TextBox4.Text = "";
+ TextBox5.Text = "";
+ DropDownList2.SelectedIndex = 0;
+ GetData();
+ }
+ }
+}
+DAL
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Data.SqlClient;
+using System.Data;
+using System.Configuration;
+namespace DAL
+{
+ public class Class1
+ {
+ public int Insert(BO.Class1 boe)
+ {
+ SqlConnection con = new
+ SqlConnection(ConfigurationManager.ConnectionStrings["cs"].ToString());
+ con.Open();
+ string q = boe.session;
+ SqlCommand cmd = new SqlCommand(q, con);
+ cmd.CommandType = CommandType.StoredProcedure; 
+ if (boe.op == "Insert" || boe.op == "Update")
+ {
+ cmd.Parameters.AddWithValue("@ename", boe.ename);
+ cmd.Parameters.AddWithValue("@desg", boe.desg);
+ cmd.Parameters.AddWithValue("@salary", boe.salary);
+ cmd.Parameters.AddWithValue("@email", boe.email);
+ cmd.Parameters.AddWithValue("@mobile", boe.mobile);
+ cmd.Parameters.AddWithValue("@qualification", boe.qualification);
+ cmd.Parameters.AddWithValue("@manager", boe.mid);
+ if (boe.op == "Update")
+ {
+ cmd.Parameters.AddWithValue("@eid", boe.eid);
+ }
+ }
+ if (boe.op == "Delete")
+ {
+ cmd.Parameters.AddWithValue("@eid", boe.eid);
+ }
+ int a = cmd.ExecuteNonQuery();
+ con.Close();
+ return a;
+ }
+ public DataSet GetData()
+ {
+ SqlConnection con = new
+ SqlConnection(ConfigurationManager.ConnectionStrings["cs"].ToString());
+ SqlDataAdapter da = new SqlDataAdapter("p_display", con);
+ DataSet ds = new DataSet();
+ da.Fill(ds, "Emp");
+ return ds;
+ }
+ public int Manager(BO.Class1 boe)
+ {
+ SqlConnection con = new
+ SqlConnection(ConfigurationManager.ConnectionStrings["cs"].ToString());
+ string q = "select eid from Emp where ename='" + boe.ename + "'";
+ con.Open();
+ SqlCommand cmd = new SqlCommand(q, con);
+ object b = cmd.ExecuteScalar();
+ int a = Convert.ToInt32(b);
+ return (int)a;
+ }
+ public int Ma(BO.Class1 boe)
+ {
+ SqlConnection con = new
+SqlConnection(ConfigurationManager.ConnectionStrings["cs"].ToString());
+ con.Open();
+ string q = "select count(*) from emp where eid='" + boe.mid + "'";
+ SqlCommand cmd = new SqlCommand(q, con);
+ object b = cmd.ExecuteScalar();
+ int a = Convert.ToInt32(b);
+ return a;
+ }
+ }
+}
+BLL
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Data;
+namespace BLL
+{
+ public class Class1
+ {
+ 
+ DAL.Class1 d = new DAL.Class1();
+ public int Insert(BO.Class1 boe)
+ {
+ int a = d.Insert(boe);
+ return a;
+ }
+ public DataSet GetData()
+ {
+ DataSet ds = d.GetData();
+ return ds;
+ }
+ public int Manager(BO.Class1 boe)
+ {
+ int a = d.Manager(boe);
+ return a;
+ }
+ public int Ma(BO.Class1 boe)
+ {
+ int a = d.Ma(boe);
+ return a;
+ }
+ }
+}
+BO
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+namespace BO
+{
+ public class Class1
+ {
+ 
+ public int eid { get; set; }
+ public string ename { get; set; }
+ public string desg { get; set; }
+ public double salary { get; set; }
+ public string email { get; set; }
+ public long mobile { get; set; }
+ public string qualification { get; set; }
+ public int mid { get; set; }
+ 
+ public string session { get; set; }
+ public string op { get; set; }
+ }
+}
