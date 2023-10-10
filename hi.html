@@ -9,7 +9,7 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     </head>
 <body>
-    <h2 align="center"> WELCOME TO MY PAGE</h2>
+    <h2 align="center"> WELCOME HOME</h2>
   <div class="alert alert-success">
     <strong>Take a tour around</strong> I hope you will have a succesful year ahead.
   </div>
@@ -40,9 +40,13 @@
   
  
  function j(){
+     if(x!=null){
     let x = document.getElementById("tex").value;   
-    let a=document.getElementById("n").innerHTML= "Mr."+x+",Your Mobile is hacked"  ;
+    let a=document.getElementById("n").innerHTML= "Mr."+x+",Your Device is hacked"  ;
     document.body.appendChild(image);   
+     } else{
+         let a=document.getElementById("n").innerHTML= "Enter your name"  ; 
+     }
  }
 
   </script>
