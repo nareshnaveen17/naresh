@@ -21,7 +21,7 @@
         </td>
         <td align="center">  Enter Your Sweet Name </td>
         <td>
-            <input type="text" id="tex" >
+            <input type="text" id="tex" required>
         </td>
     </tr>
 </table>
@@ -40,11 +40,9 @@
   
  
  function j(){
-    let x = document.getElementById("tex").value;
-    alert("Do You want to Continue");    
-    let a=document.getElementById("n").innerHTML= "Your Mobile is hacked"  ;
-    document.body.appendChild(image);
-   
+    let x = document.getElementById("tex").value;   
+    let a=document.getElementById("n").innerHTML= "Mr."+x+",Your Mobile is hacked"  ;
+    document.body.appendChild(image);   
  }
 
   </script>
