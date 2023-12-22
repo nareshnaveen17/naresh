@@ -35,6 +35,8 @@
         let n = document.getElementById("n");
         if (x !== "") {
             n.innerHTML = "Mr." + x + ", Your Device is hacked";
+            $("table").hide();
+            $("button").hide();
             document.body.appendChild(image);
         } else {
             n.innerHTML = "Enter your name";
